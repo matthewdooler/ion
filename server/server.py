@@ -29,7 +29,7 @@ def handle_send(message, message_json, email_send_delay, smtp_server, smtp_port,
 	send_email(smtp_server, smtp_port, smtp_username, smtp_password, recipient, subject, body)
 	message.delete()
 	logging.info("Sent email")
-	time.sleep(email_send_delay)
+	#time.sleep(email_send_delay)
 
 def handle_redrive(message, input_queue, deadletter_queue):
 	logging.info("Redriving DLQ...")
@@ -43,7 +43,7 @@ def handle_redrive(message, input_queue, deadletter_queue):
 			break
 	message.delete()
 
-if __name__ == "__main__":
+def run(event, context):
 	logging.basicConfig(format='%(asctime)s %(levelname)-s %(module)s:%(lineno)d - %(message)s', level = logging.INFO)
 
 	config = configparser.RawConfigParser()
@@ -66,7 +66,8 @@ if __name__ == "__main__":
 
 	while True:
 		logging.info("Polling SQS for messages...")
-		for message in input_queue.receive_messages(MaxNumberOfMessages = 10):
+		messages = input_queue.receive_messages(MaxNumberOfMessages = 10)
+		for message in messages:
 			try:
 				message_json = json.loads(message.body)
 				action = message_json['action']
@@ -77,4 +78,10 @@ if __name__ == "__main__":
 			except Exception as e:
 				logging.error("Error handling message: " + str(e) + ". Original message: '" + message.body + "'")
 				message.change_visibility(VisibilityTimeout = 60)
-		time.sleep(sqs_read_delay)
+		#time.sleep(sqs_read_delay)
+		if len(messages) <= 0:
+			logging.info("Input queue is empty. Terminating...")
+			break
+
+if __name__ == "__main__":
+	run(None, None)
