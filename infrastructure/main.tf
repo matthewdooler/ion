@@ -102,3 +102,39 @@ resource "aws_iam_role_policy" "ion_lambda_role_policy" {
 }
 EOF
 }
+
+resource "aws_cloudwatch_metric_alarm" "input_queue_size_alarm" {
+  alarm_name                = "ion-input-queue-size-alarm"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  evaluation_periods        = "1"
+  metric_name               = "ApproximateNumberOfMessagesVisible"
+  namespace                 = "AWS/SQS"
+  dimensions {
+    QueueName = "${aws_sqs_queue.input_queue.name}"
+  }
+  period                    = "60"
+  statistic                 = "Maximum"
+  threshold                 = "1"
+  alarm_description         = "This metric monitors the number of available messages on the input queue"
+  insufficient_data_actions = []
+  alarm_actions             = ["${aws_sns_topic.input_queue_size_alarm_topic.arn}"]
+}
+
+resource "aws_sns_topic" "input_queue_size_alarm_topic" {
+  name = "ion-input-queue-size-alarm"
+}
+
+resource "aws_sns_topic_subscription" "input_queue_size_alarm_topic_lambda" {
+  topic_arn = "${aws_sns_topic.input_queue_size_alarm_topic.arn}"
+  protocol  = "lambda"
+  endpoint  = "${aws_lambda_function.ion.arn}"
+}
+
+resource "aws_lambda_permission" "with_sns" {
+    statement_id = "AllowExecutionFromSNS"
+    action = "lambda:InvokeFunction"
+    function_name = "${aws_lambda_function.ion.arn}"
+    principal = "sns.amazonaws.com"
+    source_arn = "${aws_sns_topic.input_queue_size_alarm_topic.arn}"
+}
+
