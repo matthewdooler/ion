@@ -1,2 +1,3 @@
 aws.credentials
 *-secrets.cfg
+.DS_Store
