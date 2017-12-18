@@ -3,6 +3,13 @@ import time
 import smtplib
 import json
 import configparser
+import logging
+import sys
+import signal
+
+def signal_handler(signal, frame):
+	sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
 
 def send_email(server, port, user, pwd, recipient, subject, body):
 	message = """\From: %s\nTo: %s\nSubject: %s\n\n%s
