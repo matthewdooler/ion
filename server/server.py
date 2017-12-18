@@ -33,17 +33,19 @@ if __name__ == "__main__":
 	queue = sqs.get_queue_by_name(QueueName=input_queue_name)
 
 	while True:
-		print("Reading messages from SQS...")
-		for message in queue.receive_messages():
-			message_json = json.loads(message.body)
-			recipient = message_json['recipient']
-			subject = message_json['subject']
-			body = message_json['body']
-			print("Sending '" + subject + "' to '" +  recipient + "'")
+		print("Polling SQS for messages...")
+		for message in queue.receive_messages(): # TODO: more messages per batch
 			try:
+				message_json = json.loads(message.body)
+				recipient = message_json['recipient']
+				subject = message_json['subject']
+				body = message_json['body']
 				send_email(smtp_server, smtp_port, smtp_username, smtp_password, recipient, subject, body)
 				message.delete()
+				print("Sent email")
 			except Exception as e:
-				print("Failed to send '" + subject + "' to '" +  recipient + "': " + str(e))
+				print("Failed to send email: " + str(e))
+				print("Original message from SQS: '" + message.body + "'")
+				message.change_visibility(VisibilityTimeout = 60)
 			time.sleep(email_send_delay)
 		time.sleep(sqs_read_delay)
