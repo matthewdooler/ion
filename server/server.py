@@ -77,5 +77,4 @@ if __name__ == "__main__":
 			except Exception as e:
 				logging.error("Error handling message: " + str(e) + ". Original message: '" + message.body + "'")
 				message.change_visibility(VisibilityTimeout = 60)
-			time.sleep(email_send_delay)
 		time.sleep(sqs_read_delay)
