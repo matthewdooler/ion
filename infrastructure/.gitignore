@@ -2,3 +2,4 @@
 .temp_credentials
 *.tfstate.backup
 *.tfstate
+.terraform.tfstate.*

@@ -97,6 +97,13 @@ resource "aws_iam_role_policy" "ion_lambda_role_policy" {
       ],
       "Effect": "Allow",
       "Resource": "${aws_sqs_queue.input_deadletter_queue.arn}"
+    },
+    {
+      "Action": [
+        "cloudwatch:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "${aws_cloudwatch_metric_alarm.input_queue_size_alarm.id}"
     }
   ]
 }

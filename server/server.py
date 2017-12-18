@@ -43,6 +43,15 @@ def handle_redrive(message, input_queue, deadletter_queue):
 			break
 	message.delete()
 
+def reset_alarm(input_queue_size_alarm_name):
+	client = boto3.client('cloudwatch')
+	logging.info("Resetting input queue size alarm state...")
+	response = client.set_alarm_state(
+		AlarmName = input_queue_size_alarm_name,
+		StateValue = 'OK',
+		StateReason = 'Ion lambda is terminating'
+	)
+
 def run(event, context):
 	logging.basicConfig(format='%(asctime)s %(levelname)-s %(module)s:%(lineno)d - %(message)s', level = logging.INFO)
 
@@ -52,6 +61,7 @@ def run(event, context):
 	deadletter_queue_name = config.get('sqs', 'deadletter_queue_name')
 	sqs_read_delay = float(config.get('sqs', 'read_delay'))
 	email_send_delay = float(config.get('smtp', 'send_delay'))
+	input_queue_size_alarm_name = config.get('cloudwatch', 'input_queue_size_alarm_name')
 
 	config_secrets = configparser.RawConfigParser()
 	config_secrets.read('config-secrets.cfg')
@@ -81,6 +91,7 @@ def run(event, context):
 		#time.sleep(sqs_read_delay)
 		if len(messages) <= 0:
 			logging.info("Input queue is empty. Terminating...")
+			reset_alarm(input_queue_size_alarm_name)
 			break
 
 if __name__ == "__main__":
