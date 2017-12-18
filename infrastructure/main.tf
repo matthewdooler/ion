@@ -103,7 +103,7 @@ resource "aws_iam_role_policy" "ion_lambda_role_policy" {
         "cloudwatch:*"
       ],
       "Effect": "Allow",
-      "Resource": "${aws_cloudwatch_metric_alarm.input_queue_size_alarm.id}"
+      "Resource": "*"
     }
   ]
 }
