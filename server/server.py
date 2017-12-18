@@ -6,6 +6,7 @@ import configparser
 import logging
 import sys
 import signal
+import logging
 
 def signal_handler(signal, frame):
 	sys.exit(0)
@@ -22,6 +23,7 @@ def send_email(server, port, user, pwd, recipient, subject, body):
 	server.close()
 
 if __name__ == "__main__":
+	logging.basicConfig(format='%(asctime)s %(levelname)-s %(module)s:%(lineno)d - %(message)s', level=logging.INFO)
 
 	config = configparser.RawConfigParser()
 	config.read('config.cfg')
@@ -40,7 +42,7 @@ if __name__ == "__main__":
 	queue = sqs.get_queue_by_name(QueueName=input_queue_name)
 
 	while True:
-		print("Polling SQS for messages...")
+		logging.info("Polling SQS for messages...")
 		for message in queue.receive_messages(): # TODO: more messages per batch
 			try:
 				message_json = json.loads(message.body)
@@ -49,10 +51,10 @@ if __name__ == "__main__":
 				body = message_json['body']
 				send_email(smtp_server, smtp_port, smtp_username, smtp_password, recipient, subject, body)
 				message.delete()
-				print("Sent email")
+				logging.info("Sent email")
 			except Exception as e:
-				print("Failed to send email: " + str(e))
-				print("Original message from SQS: '" + message.body + "'")
+				logging.info("Failed to send email: " + str(e))
+				logging.info("Original message from SQS: '" + message.body + "'")
 				message.change_visibility(VisibilityTimeout = 60)
 			time.sleep(email_send_delay)
 		time.sleep(sqs_read_delay)
