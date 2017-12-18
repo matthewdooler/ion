@@ -53,6 +53,7 @@ def reset_alarm(input_queue_size_alarm_name):
 	)
 
 def run(event, context):
+	start_time = time.time()
 	logging.basicConfig(format='%(asctime)s %(levelname)-s %(module)s:%(lineno)d - %(message)s', level = logging.INFO)
 
 	config = configparser.RawConfigParser()
@@ -62,6 +63,8 @@ def run(event, context):
 	sqs_read_delay = float(config.get('sqs', 'read_delay'))
 	email_send_delay = float(config.get('smtp', 'send_delay'))
 	input_queue_size_alarm_name = config.get('cloudwatch', 'input_queue_size_alarm_name')
+	lambda_timeout = int(config.get('lambda', 'timeout'))
+	early_timeout = lambda_timeout - 30
 
 	config_secrets = configparser.RawConfigParser()
 	config_secrets.read('config-secrets.cfg')
@@ -89,7 +92,8 @@ def run(event, context):
 				logging.error("Error handling message: " + str(e) + ". Original message: '" + message.body + "'")
 				message.change_visibility(VisibilityTimeout = 60)
 		#time.sleep(sqs_read_delay)
-		if len(messages) <= 0:
+		elapsed_time = time.time() - start_time
+		if len(messages) <= 0 and elapsed_time >= early_timeout:
 			logging.info("Input queue is empty. Terminating...")
 			reset_alarm(input_queue_size_alarm_name)
 			break
