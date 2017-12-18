@@ -1,3 +1,4 @@
 aws.credentials
 *-secrets.cfg
 .DS_Store
+server.zip
