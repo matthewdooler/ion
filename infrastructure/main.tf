@@ -138,11 +138,25 @@ resource "aws_sns_topic_subscription" "input_queue_size_alarm_topic_lambda" {
   endpoint  = "${aws_lambda_function.ion.arn}"
 }
 
-resource "aws_lambda_permission" "with_sns" {
-    statement_id = "AllowExecutionFromSNS"
+resource "aws_lambda_permission" "input_queue_size_alarm_topic_lambda_permission" {
+    statement_id = "AllowExecutionFromSNS1"
     action = "lambda:InvokeFunction"
     function_name = "${aws_lambda_function.ion.arn}"
     principal = "sns.amazonaws.com"
     source_arn = "${aws_sns_topic.input_queue_size_alarm_topic.arn}"
+}
+
+resource "aws_sns_topic_subscription" "input_topic_lambda" {
+  topic_arn = "${aws_sns_topic.input_topic.arn}"
+  protocol  = "lambda"
+  endpoint  = "${aws_lambda_function.ion.arn}"
+}
+
+resource "aws_lambda_permission" "input_topic_lambda_permission" {
+    statement_id = "AllowExecutionFromSNS2"
+    action = "lambda:InvokeFunction"
+    function_name = "${aws_lambda_function.ion.arn}"
+    principal = "sns.amazonaws.com"
+    source_arn = "${aws_sns_topic.input_topic.arn}"
 }
 
