@@ -49,4 +49,5 @@ Redrive the deadletter queue by publishing:
 - CloudWatch alarms for a large backlog of messages, and messages present in the deadletter queue
 - Exponential backoff on failure, instead of just 60 seconds
 - Persistent store of emails sent and failed attempts (DynamoDB?)
+- Store failure reason with the message in the DLQ
 
