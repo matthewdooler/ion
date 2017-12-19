@@ -55,6 +55,7 @@ resource "aws_lambda_function" "ion" {
     source_code_hash = "${base64sha256(file("server.zip"))}"
     role = "${aws_iam_role.ion_lambda_role.arn}"
     timeout = 300
+    #reserved_concurrent_executions = 1
 }
 
 resource "aws_iam_role" "ion_lambda_role" {
