@@ -1,2 +1,2 @@
 #!/bin/bash
-cd src && zip -r server.zip server.py config.cfg config-secrets.cfg && mv server.zip .. && cd ..
+cd src && zip -r ion.zip ion.py config.cfg config-secrets.cfg && mv ion.zip .. && cd ..

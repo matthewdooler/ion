@@ -49,10 +49,10 @@ POLICY
 
 resource "aws_lambda_function" "ion" {
     function_name = "${var.lambda_function_name}"
-    handler = "server.run"
+    handler = "ion.run"
     runtime = "python3.6"
-    filename = "server.zip"
-    source_code_hash = "${base64sha256(file("server.zip"))}"
+    filename = "ion.zip"
+    source_code_hash = "${base64sha256(file("ion.zip"))}"
     role = "${aws_iam_role.ion_lambda_role.arn}"
     timeout = 120
     #reserved_concurrent_executions = 1

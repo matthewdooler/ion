@@ -1,7 +1,7 @@
 aws.credentials
 *-secrets.cfg
 .DS_Store
-server.zip
+ion.zip
 .terraform
 .temp_credentials
 *.tfstate.backup
