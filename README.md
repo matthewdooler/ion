@@ -12,12 +12,12 @@ Microservice for reliably sending emails via an SNS topic using SMTP.
 `$ terraform apply`  
 
 ## Configure
-Edit `server/config.cfg` to change defaults  
+Edit `src/config.cfg` to change defaults  
 
-Copy `server/config-secrets-example.cfg to server/config-secrets.cfg` and set the SMTP server, port and credentials.  
+Copy `src/config-secrets-example.cfg to src/config-secrets.cfg` and set the SMTP server, port and credentials.  
 
 ## Run locally
-`cd server && ./run.sh`
+`cd src && ./run.sh`
 
 ## Architecture
 
