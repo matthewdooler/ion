@@ -15,7 +15,7 @@ Copy `server/config-secrets-example.cfg to server/config-secrets.cfg` and set th
 
 ## Architecture
 
-SNS -> SQS -> Lambda -> SMTP  
+![SNS -> SQS -> Lambda -> SMTP](ion.png)
 
 1. SNS topic triggers the lambda when a message is sent through it
 2. Lambda reads messages off the queue and sends emails using SMTP
