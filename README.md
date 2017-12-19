@@ -10,6 +10,7 @@ See infrastructure/README.md
 
 ## Configure
 Edit `server/config.cfg` to change defaults  
+
 Copy `server/config-secrets-example.cfg to server/config-secrets.cfg` and set the SMTP server, port and credentials.  
 
 ## Architecture
