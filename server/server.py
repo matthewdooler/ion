@@ -12,24 +12,18 @@ def signal_handler(signal, frame):
 	sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
 
-def send_email(server, port, user, pwd, recipient, subject, body):
+def send_email(smtp, user, recipient, subject, body):
 	message = """\From: %s\nTo: %s\nSubject: %s\n\n%s
 	""" % (user, recipient, subject, body)
-	server = smtplib.SMTP(server, port) # TODO: does this have to be opened every time?
-	server.ehlo()
-	server.starttls()
-	server.login(user, pwd)
-	server.sendmail(user, recipient, message)
-	server.close()
+	smtp.sendmail(user, recipient, message)
 
-def handle_send(message, message_json, email_send_delay, smtp_server, smtp_port, smtp_username, smtp_password):
+def handle_send(message, message_json, smtp, smtp_username):
 	recipient = message_json['recipient']
 	subject = message_json['subject']
 	body = message_json['body']
-	send_email(smtp_server, smtp_port, smtp_username, smtp_password, recipient, subject, body)
+	send_email(smtp, smtp_username, recipient, subject, body)
 	message.delete()
 	logging.info("Sent email")
-	#time.sleep(email_send_delay)
 
 def handle_redrive(message, input_queue, deadletter_queue):
 	logging.info("Redriving DLQ...")
@@ -60,8 +54,6 @@ def run(event, context):
 	config.read('config.cfg')
 	input_queue_name = config.get('sqs', 'input_queue_name')
 	deadletter_queue_name = config.get('sqs', 'deadletter_queue_name')
-	sqs_read_delay = float(config.get('sqs', 'read_delay'))
-	email_send_delay = float(config.get('smtp', 'send_delay'))
 	input_queue_size_alarm_name = config.get('cloudwatch', 'input_queue_size_alarm_name')
 	lambda_timeout = int(config.get('lambda', 'timeout'))
 	early_timeout = lambda_timeout - 30
@@ -72,6 +64,11 @@ def run(event, context):
 	smtp_port = int(config_secrets.get('smtp', 'port'))
 	smtp_username = config_secrets.get('smtp', 'username')
 	smtp_password = config_secrets.get('smtp', 'password')
+
+	smtp = smtplib.SMTP(smtp_server, smtp_port)
+	smtp.ehlo()
+	smtp.starttls()
+	smtp.login(smtp_username, smtp_password)
 
 	sqs = boto3.resource('sqs')
 	input_queue = sqs.get_queue_by_name(QueueName=input_queue_name)
@@ -85,16 +82,16 @@ def run(event, context):
 				message_json = json.loads(message.body)
 				action = message_json['action']
 				if action == "send":
-					handle_send(message, message_json, email_send_delay, smtp_server, smtp_port, smtp_username, smtp_password)
+					handle_send(message, message_json, smtp, smtp_username)
 				elif action == "redrive":
 					handle_redrive(message, input_queue, deadletter_queue)
 			except Exception as e:
 				logging.error("Error handling message: " + str(e) + ". Original message: '" + message.body + "'")
 				message.change_visibility(VisibilityTimeout = 60)
-		#time.sleep(sqs_read_delay)
 		elapsed_time = time.time() - start_time
 		if elapsed_time >= early_timeout:
 			logging.info("Elapsed time is " + str(elapsed_time) + "/" + str(lambda_timeout) + " seconds. Terminating...")
+			smtp.close()
 			reset_alarm(input_queue_size_alarm_name)
 			break
 
