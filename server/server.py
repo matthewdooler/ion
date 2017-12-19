@@ -93,8 +93,8 @@ def run(event, context):
 				message.change_visibility(VisibilityTimeout = 60)
 		#time.sleep(sqs_read_delay)
 		elapsed_time = time.time() - start_time
-		if len(messages) <= 0 and elapsed_time >= early_timeout:
-			logging.info("Input queue is empty. Terminating...")
+		if elapsed_time >= early_timeout:
+			logging.info("Elapsed time is " + str(elapsed_time) + "/" + str(lambda_timeout) + " seconds. Terminating...")
 			reset_alarm(input_queue_size_alarm_name)
 			break
 
