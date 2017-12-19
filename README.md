@@ -1,4 +1,4 @@
-# ion
+# ion [![Build Status](https://travis-ci.org/matthewdooler/ion.svg?branch=master)](https://travis-ci.org/matthewdooler/ion)
 
 Microservice for reliably sending emails via an SNS topic using SMTP.
 
