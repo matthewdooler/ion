@@ -15,7 +15,7 @@ Microservice for reliably sending emails via an SNS topic using SMTP.
 ## Configure
 Edit `src/config.cfg` to change defaults  
 
-Copy `src/config-secrets-example.cfg to src/config-secrets.cfg` and set the SMTP server, port and credentials.  
+Copy `src/config-secrets-example.cfg` to `src/config-secrets.cfg` and set the SMTP server, port and credentials.  
 
 ## Run locally
 `cd src && ./run.sh`
