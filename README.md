@@ -39,7 +39,8 @@ Send an email by publishing a message to `ion-input-topic`:
 	"action": "send",
 	"recipient": "???",
 	"subject": "Test email 1",
-	"body": "This is a test email"
+	"body_text": "This is a plaintext test email",
+	"body_html": "<html><body><h1>Test email 1</h1><h2>This is a HTML test email</h2></body></html>"
 }
 ```
 

@@ -7,21 +7,28 @@ import logging
 import sys
 import signal
 import logging
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 def signal_handler(signal, frame):
 	sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
 
-def send_email(smtp, user, recipient, subject, body):
-	message = """\From: %s\nTo: %s\nSubject: %s\n\n%s
-	""" % (user, recipient, subject, body)
-	smtp.sendmail(user, recipient, message)
+def send_email(smtp, user, recipient, subject, body_text, body_html):
+	message = MIMEMultipart('alternative')
+	message['Subject'] = subject
+	message['From'] = user
+	message['To'] = recipient
+	message.attach(MIMEText(body_text, 'plain'))
+	message.attach(MIMEText(body_html, 'html'))
+	smtp.sendmail(user, recipient, message.as_string())
 
 def handle_send(message, message_json, smtp, smtp_username):
 	recipient = message_json['recipient']
 	subject = message_json['subject']
-	body = message_json['body']
-	send_email(smtp, smtp_username, recipient, subject, body)
+	body_text = message_json['body_text']
+	body_html = message_json['body_html']
+	send_email(smtp, smtp_username, recipient, subject, body_text, body_html)
 	message.delete()
 	logging.info("Sent email")
 
