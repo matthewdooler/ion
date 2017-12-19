@@ -1,6 +1,6 @@
 {
 	"action": "send",
-	"recipient": "???@???.com",
+	"recipient": "???",
 	"subject": "Test email 1",
 	"body": "This is a test email"
 }
