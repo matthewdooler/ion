@@ -3,17 +3,17 @@ provider "aws" {
 }
 
 resource "aws_sqs_queue" "input_queue" {
-  name                      = "ion-input-queue"
+  name                      = "${var.input_queue_name}"
   receive_wait_time_seconds = 20
   redrive_policy            = "{\"deadLetterTargetArn\":\"${aws_sqs_queue.input_deadletter_queue.arn}\",\"maxReceiveCount\":3}"
 }
 
 resource "aws_sqs_queue" "input_deadletter_queue" {
-  name = "ion-input-deadletter-queue"
+  name = "${var.input_deadletter_queue_name}"
 }
 
 resource "aws_sns_topic" "input_topic" {
-  name = "ion-input-topic"
+  name = "${var.input_topic_name}"
 }
 
 resource "aws_sns_topic_subscription" "input_queue_subscription" {
@@ -48,7 +48,7 @@ POLICY
 }
 
 resource "aws_lambda_function" "ion" {
-    function_name = "ion"
+    function_name = "${var.lambda_function_name}"
     handler = "server.run"
     runtime = "python3.6"
     filename = "server.zip"
@@ -59,7 +59,7 @@ resource "aws_lambda_function" "ion" {
 }
 
 resource "aws_iam_role" "ion_lambda_role" {
-  name = "ion-lambda-role"
+  name = "${var.lambda_role_name}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -78,7 +78,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "ion_lambda_role_policy" {
-  name = "ion-lambda-role-policy"
+  name = "${aws_iam_role.ion_lambda_role.id}-policy"
   role = "${aws_iam_role.ion_lambda_role.id}"
 
   policy = <<EOF
@@ -112,7 +112,7 @@ EOF
 }
 
 resource "aws_cloudwatch_metric_alarm" "input_queue_size_alarm" {
-  alarm_name                = "ion-input-queue-size-alarm"
+  alarm_name                = "${aws_sqs_queue.input_queue.name}-size-alarm"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   evaluation_periods        = "1"
   metric_name               = "ApproximateNumberOfMessagesVisible"
@@ -129,7 +129,7 @@ resource "aws_cloudwatch_metric_alarm" "input_queue_size_alarm" {
 }
 
 resource "aws_sns_topic" "input_queue_size_alarm_topic" {
-  name = "ion-input-queue-size-alarm"
+  name = "${aws_sqs_queue.input_queue.name}-size-alarm-topic"
 }
 
 resource "aws_sns_topic_subscription" "input_queue_size_alarm_topic_lambda" {
