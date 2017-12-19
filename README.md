@@ -24,7 +24,7 @@ Copy `src/config-secrets-example.cfg to src/config-secrets.cfg` and set the SMTP
 
 ![SNS -> SQS -> Lambda -> SMTP](ion.png)
 
-1. SNS topic triggers the lambda when a message is sent through it
+1. SNS topic triggers the lambda when a message is sent through it. Concurrency is limited to 1 to prevent a lambda being spawned for every email.
 2. Lambda reads messages off the queue and sends emails using SMTP
 3. SQS queue has an alarm that fires if the number of available messages is >= 1, which also triggers the lambda (in case the SNS-triggered lambda did not work through all the pending messages)
 4. Lambda sets alarm state to `OK` before it closes, so that it will be re-triggered if there are still pending messages
