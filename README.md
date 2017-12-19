@@ -2,9 +2,6 @@
 
 Microservice for reliably sending emails via an SNS topic using SMTP.
 
-## Run locally
-`cd server && ./run.sh`
-
 ## Build infrastructure
 See infrastructure/README.md
 
@@ -12,6 +9,9 @@ See infrastructure/README.md
 Edit `server/config.cfg` to change defaults  
 
 Copy `server/config-secrets-example.cfg to server/config-secrets.cfg` and set the SMTP server, port and credentials.  
+
+## Run locally
+`cd server && ./run.sh`
 
 ## Architecture
 
