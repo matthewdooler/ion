@@ -42,3 +42,11 @@ Redrive the deadletter queue by publishing:
 	"action": "redrive"
 }
 ```
+
+## TODO
+- Scaling (i.e., increase lambda concurrency limit)
+- Reusable terraform module
+- CloudWatch alarms for a large backlog of messages, and messages present in the deadletter queue
+- Exponential backoff on failure, instead of just 60 seconds
+- Persistent store of emails sent and failed attempts (DynamoDB?)
+
