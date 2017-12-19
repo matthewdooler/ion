@@ -8,6 +8,7 @@ Microservice for reliably sending emails via an SNS topic using SMTP.
 
 ### Terraform
 `$ terraform init`  
+`$ terraform get`  
 `$ terraform plan`  
 `$ terraform apply`  
 
