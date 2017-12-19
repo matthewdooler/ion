@@ -54,7 +54,7 @@ resource "aws_lambda_function" "ion" {
     filename = "server.zip"
     source_code_hash = "${base64sha256(file("server.zip"))}"
     role = "${aws_iam_role.ion_lambda_role.arn}"
-    timeout = 300
+    timeout = 120
     #reserved_concurrent_executions = 1
 }
 
