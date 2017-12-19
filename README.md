@@ -22,3 +22,23 @@ SNS -> SQS -> Lambda -> SMTP
 3. SQS queue has an alarm that fires if the number of available messages is >= 1, which also triggers the lambda (in case the SNS-triggered lambda did not work through all the pending messages)
 4. Lambda sets alarm state to `OK` before it closes, so that it will be re-triggered if there are still pending messages
 
+Messages that fail to send will be retried automatically by SQS's visibility timeout, up to `maxReceiveCount` (at which point they go to the deadletter queue).
+
+## How to use
+
+Send an email by publishing a message to `ion-input-topic`:
+```
+{
+	"action": "send",
+	"recipient": "???",
+	"subject": "Test email 1",
+	"body": "This is a test email"
+}
+```
+
+Redrive the deadletter queue by publishing:
+```
+{
+	"action": "redrive"
+}
+```
