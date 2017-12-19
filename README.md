@@ -3,7 +3,13 @@
 Microservice for reliably sending emails via an SNS topic using SMTP.
 
 ## Build infrastructure
-See infrastructure/README.md
+### Package the lambda
+`./release.sh`
+
+### Terraform
+`$ terraform init`  
+`$ terraform plan`  
+`$ terraform apply`  
 
 ## Configure
 Edit `server/config.cfg` to change defaults  
